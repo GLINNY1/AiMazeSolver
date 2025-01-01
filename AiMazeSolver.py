@@ -44,7 +44,38 @@ END_POINT = random_border_point()
 while START_POINT == END_POINT:  # Ensure start and end are different
     END_POINT = random_border_point()
 
+def generate_maze():
+    maze = [[1 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+    stack = [(1, 1)]
+    maze[1][1] = 0  # Start with an open cell
+
+    while stack:
+        x, y = stack[-1]
+        neighbors = [
+            (x + dx, y + dy)
+            for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]
+            if 1 <= x + dx < GRID_SIZE - 1 and 1 <= y + dy < GRID_SIZE - 1 and maze[y + dy][x + dx] == 1
+        ]
+        if neighbors:
+            nx, ny = random.choice(neighbors)
+            maze[(y + ny) // 2][(x + nx) // 2] = 0
+            maze[ny][nx] = 0
+            stack.append((nx, ny))
+        else:
+            stack.pop()
+
+    return maze
+
+# Modify draw_grid to render the maze
+def draw_maze(maze):
+    for y in range(GRID_SIZE):
+        for x in range(GRID_SIZE):
+            color = BLACK if maze[y][x] == 1 else WHITE
+            pygame.draw.rect(screen, color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+
 # Main loop
+maze = generate_maze()
+
 running = True
 while running:
     for event in pygame.event.get():
@@ -52,7 +83,7 @@ while running:
             running = False
 
     screen.fill(BLACK)
-    draw_grid()
+    draw_maze(maze)
     pygame.display.flip()
 
 pygame.quit()
