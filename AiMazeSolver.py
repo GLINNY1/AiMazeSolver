@@ -73,6 +73,12 @@ def draw_maze(maze):
             color = BLACK if maze[y][x] == 1 else WHITE
             pygame.draw.rect(screen, color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
+def draw_button():
+    pygame.draw.rect(screen, (0, 128, 255), (WINDOW_SIZE // 3, WINDOW_SIZE - 50, WINDOW_SIZE // 3, 50))
+    font = pygame.font.SysFont(None, 36)
+    text = font.render("Generate Maze", True, WHITE)
+    screen.blit(text, (WINDOW_SIZE // 2 - 80, WINDOW_SIZE - 40))
+
 # Main loop
 maze = generate_maze()
 
@@ -81,9 +87,12 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = event.pos
+            if WINDOW_SIZE - 50 <= y <= WINDOW_SIZE and WINDOW_SIZE // 3 <= x <= 2 * WINDOW_SIZE // 3:
+                maze = generate_maze()  # Generate a new maze
 
     screen.fill(BLACK)
     draw_maze(maze)
+    draw_button()
     pygame.display.flip()
-
-pygame.quit()
